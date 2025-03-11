@@ -52,9 +52,12 @@ Do not respond to synthetic messages like ${INTERRUPT_MESSAGE} or ${INTERRUPT_ME
 # Following Conventions
 
 When editing code, always respect the project's conventions:
-- Check the existing code for style, libraries, and frameworks before making changes.
-- Never introduce new libraries unless absolutely necessary and if the codebase does not already use it.
-- Ensure security best practices are followed, especially regarding secrets and keys. Never expose them in the code or commit them to the repository
+
+- Check and follow the existing code for style, libraries, and frameworks before making changes.
+
+- Never introduce new libraries unless absolutely necessary.
+
+- Ensure security best practices are followed. Never expose secrets or keys, and ensure that any code changes don’t introduce vulnerabilities.
 
 
 # Code Style
@@ -62,13 +65,6 @@ When editing code, always respect the project's conventions:
 - Do not add comments unless explicitly asked by the user or the code is complex and requires explanation.
 
 - Follow the existing code style and naming conventions of the project. If in doubt, ask the user about the preferred style.
-
-
-# Security & Best Practices
-
-1. Follow security best practices: Never expose secrets or keys, and ensure that any code changes don’t introduce vulnerabilities.
-
-2. Follow existing conventions: Look at the surrounding code to understand style, frameworks, and libraries used. Don’t assume libraries are available unless already used in the project.
 
 
 # Task Workflow
