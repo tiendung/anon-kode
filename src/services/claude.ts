@@ -341,7 +341,7 @@ function messageReducer(previous: OpenAI.ChatCompletionMessage, item: OpenAI.Cha
     return acc;
   };
 
-  const choice = item.choices[0];
+  const choice = item.choices?.[0];
   if (!choice) {
     // chunk contains information about usage and token counts
     return previous;
@@ -358,9 +358,8 @@ async function handleMessageStream(
 
 
   for await (const chunk of stream) {
-    const part = chunk.choices[0]?.delta.content
     message = messageReducer(message, chunk);
-    if (part) {
+    if (chunk?.choices?.[0]?.delta?.content) {
       ttftMs = Date.now() - streamStartTime
     }
   }
@@ -395,27 +394,27 @@ async function handleMessageStream(
     }
   }
 
-  if(finalResponse.choices[0]?.message.reasoning) {
+  if(finalResponse.choices?.[0]?.message?.reasoning) {
     contentBlocks.push({
       type: 'thinking',
-      thinking: finalResponse.choices[0]?.message.reasoning,
+      thinking: finalResponse.choices?.[0]?.message?.reasoning,
       signature: '',
     })
   }
 
   // NOTE: For deepseek api, the key for its returned reasoning process is reasoning_content 
-  if (finalResponse.choices[0]?.message.reasoning_content) {
+  if (finalResponse.choices?.[0]?.message?.reasoning_content) {
     contentBlocks.push({
       type: 'thinking',
-      thinking: finalResponse.choices[0]?.message.reasoning_content,
+      thinking: finalResponse.choices?.[0]?.message?.reasoning_content,
       signature: '',
     })
   }
 
-  if (finalResponse.choices[0]?.message.content) {
+  if (finalResponse.choices?.[0]?.message?.content) {
     contentBlocks.push({
       type: 'text',
-      text: finalResponse.choices[0]?.message.content,
+      text: finalResponse.choices?.[0]?.message?.content,
       citations: [],
     })
   }
@@ -424,7 +423,7 @@ async function handleMessageStream(
   const finalMessage = {
     role: 'assistant',
     content: contentBlocks,
-    stop_reason: finalResponse.choices[0]?.finish_reason,
+    stop_reason: finalResponse.choices?.[0]?.finish_reason,
     type: 'message',
     usage: finalResponse.usage,
   }
@@ -774,7 +773,7 @@ async function queryOpenAI(
 
   
   for (const tool of toolSchemas) {
-    if(model.match(/^gpt-|^o\d-mini/)) {
+    if(model.match(/^gpt-|^o\d(-mini|-preview)?$/)) {
       if(tool.function.description.length > 1024) {
         tool.function.description = tool.function.description.slice(0, 1024)
       }
@@ -782,7 +781,7 @@ async function queryOpenAI(
     delete tool.function['$schema']
   }
 
-  const maxTokensParam = model.match(/^o\d-mini/) ? 'max_completion_tokens' : 'max_tokens';
+  const maxTokensParam = model.match(/^o\d(-mini|-preview)?$/) ? 'max_completion_tokens' : 'max_tokens';
 
   let start = Date.now()
   let attemptNumber = 0
